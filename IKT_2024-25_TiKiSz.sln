@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator_Program", "Simulator_Program\Simulator_Program.csproj", "{9EB018A5-1E60-4D60-B3F2-35215F4D3877}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator_Lib", "Simulator_Lib\Simulator_Lib.csproj", "{3D43F7CD-8F03-4C05-A98A-64EECF08D95C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simulator_Test", "Simulator_Test\Simulator_Test.csproj", "{009429AB-5526-444D-833D-4A5E397D3E2E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9EB018A5-1E60-4D60-B3F2-35215F4D3877}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9EB018A5-1E60-4D60-B3F2-35215F4D3877}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9EB018A5-1E60-4D60-B3F2-35215F4D3877}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9EB018A5-1E60-4D60-B3F2-35215F4D3877}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3D43F7CD-8F03-4C05-A98A-64EECF08D95C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3D43F7CD-8F03-4C05-A98A-64EECF08D95C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3D43F7CD-8F03-4C05-A98A-64EECF08D95C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3D43F7CD-8F03-4C05-A98A-64EECF08D95C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{009429AB-5526-444D-833D-4A5E397D3E2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{009429AB-5526-444D-833D-4A5E397D3E2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{009429AB-5526-444D-833D-4A5E397D3E2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{009429AB-5526-444D-833D-4A5E397D3E2E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
