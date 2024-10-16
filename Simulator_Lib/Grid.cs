@@ -5,14 +5,18 @@ public class Grid
     private readonly int _width;
     private readonly int _height;
     private readonly Cell[,] _cells;
+    private readonly AnimalProperties rabbitProperties;
+    private readonly AnimalProperties foxProperties;
     
     public int Width => _width;
     public int Height => _height;
 
-    public Grid(int width, int height)
+    public Grid(int width, int height, AnimalProperties rabbitProperties, AnimalProperties foxProperties)
     {
         this._width = width;
         this._height = height;
+        this.rabbitProperties = rabbitProperties;
+        this.foxProperties = foxProperties;
         _cells = new Cell[width, height];
         InitializeCells();
     }
@@ -33,7 +37,6 @@ public class Grid
     {
         Random random = new Random();
 
-        // Véletlenszerűen helyezünk el nyulakat
         for (int i = 0; i < rabbitCount; i++)
         {
             bool placed = false;
@@ -41,15 +44,14 @@ public class Grid
             {
                 int x = random.Next(_width);
                 int y = random.Next(_height);
-                if (_cells[x, y].IsEmpty()) // Ha a mező üres, elhelyezzük a nyulat
+                if (_cells[x, y].IsEmpty())
                 {
-                    _cells[x, y].Rabbit = new Rabbit();
+                    _cells[x, y].Rabbit = new Rabbit(rabbitProperties); // Állat tulajdonságok átadása
                     placed = true;
                 }
             }
         }
 
-        // Véletlenszerűen helyezünk el rókákat
         for (int i = 0; i < foxCount; i++)
         {
             bool placed = false;
@@ -57,9 +59,9 @@ public class Grid
             {
                 int x = random.Next(_width);
                 int y = random.Next(_height);
-                if (_cells[x, y].IsEmpty()) // Ha a mező üres, elhelyezzük a rókát
+                if (_cells[x, y].IsEmpty())
                 {
-                    _cells[x, y].Fox = new Fox();
+                    _cells[x, y].Fox = new Fox(foxProperties); // Állat tulajdonságok átadása
                     placed = true;
                 }
             }
@@ -83,22 +85,16 @@ public class Grid
                 if (cell.HasRabbit())
                 {
                     Rabbit rabbit = cell.Rabbit;
-
-                    // Nyúl táplálkozik
                     rabbit.Eat(cell.Grass);
-
-                    // Nyúl éhezik
                     rabbit.Hunger();
 
-                    // Ha elpusztult, eltávolítjuk
                     if (!rabbit.IsAlive)
                     {
                         cell.Rabbit = null;
                         continue;
                     }
 
-                    // Nyúl mozog, ha szükséges
-                    MoveRabbit(x, y);
+                    rabbit.Move(this, x, y);
                 }
             }
         }
@@ -113,40 +109,33 @@ public class Grid
                 if (cell.HasFox())
                 {
                     Fox fox = cell.Fox;
-
-                    // Róka táplálkozik, ha van nyúl a közelben
-                    if (!EatRabbitIfNearby(x, y, fox))
-                    {
-                        // Ha nem talált nyulat, mozogjon
-                        MoveFox(x, y);
-                    }
-
-                    // Róka éhezik
                     fox.Hunger();
 
-                    // Ha elpusztult, eltávolítjuk
                     if (!fox.IsAlive)
                     {
                         cell.Fox = null;
+                        continue;
                     }
+
+                    fox.Move(this, x, y);
                 }
             }
         }
 
-        // 3. Fű növekedése minden mezőn
+        // 3. Fű növekedése
         for (int x = 0; x < _width; x++)
         {
             for (int y = 0; y < _height; y++)
             {
                 var cell = _cells[x, y];
-                if (!cell.HasRabbit()) // Ha nincs nyúl, a fű nőhet
+                if (!cell.HasRabbit())
                 {
                     cell.Grass.Grow();
                 }
             }
         }
 
-        // 4. Nyulak és rókák szaporodása
+        // 4. Nyulak és rókák szaporodása (nem részletezett)
         ReproduceRabbits();
         ReproduceFoxes();
     }
@@ -165,7 +154,7 @@ public class Grid
                     {
                         Random random = new Random();
                         (int newX, int newY) = availableCells[random.Next(availableCells.Count)];
-                        _cells[newX, newY].Rabbit = new Rabbit();
+                        _cells[newX, newY].Rabbit = new Rabbit(rabbitProperties);
                     }
                 }
             }
@@ -186,7 +175,7 @@ public class Grid
                     {
                         Random random = new Random();
                         (int newX, int newY) = availableCells[random.Next(availableCells.Count)];
-                        _cells[newX, newY].Fox = new Fox();
+                        _cells[newX, newY].Fox = new Fox(foxProperties);
                     }
                 }
             }
@@ -194,7 +183,7 @@ public class Grid
     }
 
     // Mozgatási logika nyulakhoz
-    private void MoveRabbit(int x, int y)
+    public void MoveRabbit(int x, int y)
     {
         Rabbit rabbit = _cells[x, y].Rabbit;
 
@@ -222,7 +211,7 @@ public class Grid
     }
 
     // Mozgatási logika rókákhoz
-    private bool EatRabbitIfNearby(int x, int y, Fox fox)
+    public bool EatRabbitIfNearby(int x, int y, Fox fox)
     {
         List<(int, int)> nearbyRabbits = GetNearbyRabbits(x, y, 2);
         
@@ -238,7 +227,7 @@ public class Grid
         return false;
     }
 
-    private void MoveFox(int x, int y)
+    public void MoveFox(int x, int y)
     {
         Fox fox = _cells[x, y].Fox;
 
@@ -257,19 +246,44 @@ public class Grid
     {
         List<(int, int)> availableCells = new List<(int, int)>();
 
-        // Szomszédos mezők ellenőrzése itt (pl. [x-1, y], [x+1, y], stb.)
+        // Balra (x-1), ha van érvényes mező
+        if (x > 0 && (!emptyOnly || _cells[x - 1, y].IsEmpty())) availableCells.Add((x - 1, y));
+
+        // Jobbra (x+1), ha van érvényes mező
+        if (x < _width - 1 && (!emptyOnly || _cells[x + 1, y].IsEmpty())) availableCells.Add((x + 1, y));
+
+        // Fel (y-1), ha van érvényes mező
+        if (y > 0 && (!emptyOnly || _cells[x, y - 1].IsEmpty())) availableCells.Add((x, y - 1));
+
+        // Le (y+1), ha van érvényes mező
+        if (y < _height - 1 && (!emptyOnly || _cells[x, y + 1].IsEmpty())) availableCells.Add((x, y + 1));
 
         return availableCells;
     }
+
 
     private List<(int, int)> GetNearbyRabbits(int x, int y, int range)
     {
         List<(int, int)> nearbyRabbits = new List<(int, int)>();
 
-        // Közeli nyulak keresése itt (pl. adott sugarú körben)
+        // Ellenőrizzük a környező mezőket a megadott távolságon belül
+        for (int dx = -range; dx <= range; dx++)
+        {
+            for (int dy = -range; dy <= range; dy++)
+            {
+                if (x + dx >= 0 && x + dx < _width && y + dy >= 0 && y + dy < _height)
+                {
+                    if (_cells[x + dx, y + dy].HasRabbit())
+                    {
+                        nearbyRabbits.Add((x + dx, y + dy));
+                    }
+                }
+            }
+        }
 
         return nearbyRabbits;
     }
+
 
     public class Cell
     {
