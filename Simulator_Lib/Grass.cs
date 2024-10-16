@@ -31,15 +31,8 @@ public class Grass
 
     // Nyúl legelése
     public void Eaten()
-    {
-        if (State == GrassState.Mature)
-        {
-            State = GrassState.Young;
-        }
-        else if (State == GrassState.Young)
-        {
-            State = GrassState.Seedling;
-        }
+    { 
+        State = GrassState.Seedling;
     }
 
     // Tápérték meghatározása
