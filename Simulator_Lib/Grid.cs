@@ -2,28 +2,28 @@ namespace Simulator_Lib;
 
 public class Grid
 {
-    private readonly int width;
-    private readonly int height;
-    private readonly Cell[,] cells;
+    private readonly int _width;
+    private readonly int _height;
+    private readonly Cell[,] _cells;
     
-    public int Width => width;
-    public int Height => height;
+    public int Width => _width;
+    public int Height => _height;
 
     public Grid(int width, int height)
     {
-        this.width = width;
-        this.height = height;
-        cells = new Cell[width, height];
+        this._width = width;
+        this._height = height;
+        _cells = new Cell[width, height];
         InitializeCells();
     }
 
     private void InitializeCells()
     {
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < _width; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < _height; y++)
             {
-                cells[x, y] = new Cell();
+                _cells[x, y] = new Cell();
             }
         }
     }
@@ -39,11 +39,11 @@ public class Grid
             bool placed = false;
             while (!placed)
             {
-                int x = random.Next(width);
-                int y = random.Next(height);
-                if (cells[x, y].IsEmpty()) // Ha a mező üres, elhelyezzük a nyulat
+                int x = random.Next(_width);
+                int y = random.Next(_height);
+                if (_cells[x, y].IsEmpty()) // Ha a mező üres, elhelyezzük a nyulat
                 {
-                    cells[x, y].Rabbit = new Rabbit();
+                    _cells[x, y].Rabbit = new Rabbit();
                     placed = true;
                 }
             }
@@ -55,11 +55,11 @@ public class Grid
             bool placed = false;
             while (!placed)
             {
-                int x = random.Next(width);
-                int y = random.Next(height);
-                if (cells[x, y].IsEmpty()) // Ha a mező üres, elhelyezzük a rókát
+                int x = random.Next(_width);
+                int y = random.Next(_height);
+                if (_cells[x, y].IsEmpty()) // Ha a mező üres, elhelyezzük a rókát
                 {
-                    cells[x, y].Fox = new Fox();
+                    _cells[x, y].Fox = new Fox();
                     placed = true;
                 }
             }
@@ -68,17 +68,17 @@ public class Grid
 
     public Cell GetCell(int x, int y)
     {
-        return cells[x, y];
+        return _cells[x, y];
     }
     
     public void NextTurn()
     {
         // 1. Nyulak mozgása és táplálkozása
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < _width; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < _height; y++)
             {
-                var cell = cells[x, y];
+                var cell = _cells[x, y];
 
                 if (cell.HasRabbit())
                 {
@@ -104,11 +104,11 @@ public class Grid
         }
 
         // 2. Rókák mozgása és táplálkozása
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < _width; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < _height; y++)
             {
-                var cell = cells[x, y];
+                var cell = _cells[x, y];
 
                 if (cell.HasFox())
                 {
@@ -134,11 +134,11 @@ public class Grid
         }
 
         // 3. Fű növekedése minden mezőn
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < _width; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < _height; y++)
             {
-                var cell = cells[x, y];
+                var cell = _cells[x, y];
                 if (!cell.HasRabbit()) // Ha nincs nyúl, a fű nőhet
                 {
                     cell.Grass.Grow();
@@ -153,11 +153,11 @@ public class Grid
 
     private void ReproduceRabbits()
     {
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < _width; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < _height; y++)
             {
-                var cell = cells[x, y];
+                var cell = _cells[x, y];
                 if (cell.HasRabbit() && cell.Rabbit.CanReproduce())
                 {
                     List<(int, int)> availableCells = GetAvailableAdjacentCells(x, y, true);
@@ -165,7 +165,7 @@ public class Grid
                     {
                         Random random = new Random();
                         (int newX, int newY) = availableCells[random.Next(availableCells.Count)];
-                        cells[newX, newY].Rabbit = new Rabbit();
+                        _cells[newX, newY].Rabbit = new Rabbit();
                     }
                 }
             }
@@ -174,11 +174,11 @@ public class Grid
 
     private void ReproduceFoxes()
     {
-        for (int x = 0; x < width; x++)
+        for (int x = 0; x < _width; x++)
         {
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < _height; y++)
             {
-                var cell = cells[x, y];
+                var cell = _cells[x, y];
                 if (cell.HasFox() && cell.Fox.CanReproduce())
                 {
                     List<(int, int)> availableCells = GetAvailableAdjacentCells(x, y, true);
@@ -186,7 +186,7 @@ public class Grid
                     {
                         Random random = new Random();
                         (int newX, int newY) = availableCells[random.Next(availableCells.Count)];
-                        cells[newX, newY].Fox = new Fox();
+                        _cells[newX, newY].Fox = new Fox();
                     }
                 }
             }
@@ -196,15 +196,15 @@ public class Grid
     // Mozgatási logika nyulakhoz
     private void MoveRabbit(int x, int y)
     {
-        Rabbit rabbit = cells[x, y].Rabbit;
+        Rabbit rabbit = _cells[x, y].Rabbit;
 
         List<(int, int)> availableCells = GetAvailableAdjacentCells(x, y, true); // Csak üres mezők
 
         if (availableCells.Count > 0)
         {
             (int newX, int newY) = GetBestCellForRabbit(availableCells);
-            cells[newX, newY].Rabbit = rabbit;
-            cells[x, y].Rabbit = null;
+            _cells[newX, newY].Rabbit = rabbit;
+            _cells[x, y].Rabbit = null;
         }
     }
 
@@ -212,7 +212,7 @@ public class Grid
     {
         foreach (var (x, y) in availableCells)
         {
-            if (cells[x, y].Grass.State == Grass.GrassState.Mature)
+            if (_cells[x, y].Grass.State == Grass.GrassState.Mature)
             {
                 return (x, y);
             }
@@ -229,10 +229,10 @@ public class Grid
         if (nearbyRabbits.Count > 0)
         {
             (int rabbitX, int rabbitY) = nearbyRabbits[0];
-            fox.Eat(cells[rabbitX, rabbitY].Rabbit);
-            cells[rabbitX, rabbitY].Rabbit = null;
-            cells[rabbitX, rabbitY].Fox = fox;
-            cells[x, y].Fox = null;
+            fox.Eat(_cells[rabbitX, rabbitY].Rabbit);
+            _cells[rabbitX, rabbitY].Rabbit = null;
+            _cells[rabbitX, rabbitY].Fox = fox;
+            _cells[x, y].Fox = null;
             return true;
         }
         return false;
@@ -240,7 +240,7 @@ public class Grid
 
     private void MoveFox(int x, int y)
     {
-        Fox fox = cells[x, y].Fox;
+        Fox fox = _cells[x, y].Fox;
 
         List<(int, int)> availableCells = GetAvailableAdjacentCells(x, y, true); // Csak üres mezők
 
@@ -248,8 +248,8 @@ public class Grid
         {
             Random random = new Random();
             (int newX, int newY) = availableCells[random.Next(availableCells.Count)];
-            cells[newX, newY].Fox = fox;
-            cells[x, y].Fox = null;
+            _cells[newX, newY].Fox = fox;
+            _cells[x, y].Fox = null;
         }
     }
 
@@ -274,8 +274,8 @@ public class Grid
     public class Cell
     {
         public Grass Grass { get; set; }
-        public Rabbit Rabbit { get; set; }
-        public Fox Fox { get; set; }
+        public Rabbit? Rabbit { get; set; }
+        public Fox? Fox { get; set; }
 
         public Cell()
         {
