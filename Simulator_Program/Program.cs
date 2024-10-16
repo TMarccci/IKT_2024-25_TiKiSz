@@ -1,16 +1,36 @@
-﻿using Simulator_Lib;
+using Simulator_Lib;
 
-// Rács méretének meghatározása
+// Szimuláció Paraméterei
 int width = 10;
 int height = 10;
-// Szimuláció hossza (körök száma)
-int numberOfTurns = 20;
+int numberOfTurns = 50;
+int rabbitCount = 7;
+int foxCount = 3;
+double? delay = 0.5; // seconds until next turn
+
+// Nyulak tulajdonságainak beállítása
+AnimalProperties rabbitProperties = new AnimalProperties
+{
+    MaxFullness = 5,
+    ReproductionFullness = 3,
+    HungerRate = 1,
+    FoodValue = 1  // A fű tápértéke
+};
+
+// Rókák tulajdonságainak beállítása
+AnimalProperties foxProperties = new AnimalProperties
+{
+    MaxFullness = 10,
+    ReproductionFullness = 9,
+    HungerRate = 2,
+    FoodValue = 3  // A nyúl tápértéke
+};
 
 // Rácsrendszer inicializálása
-Grid grid = new Grid(width, height);
+Grid grid = new Grid(width, height, rabbitProperties, foxProperties);
 
 // Populáció inicializálása (például 5 nyúl és 1 róka)
-grid.PopulateGrid(rabbitCount: 5, foxCount: 1);
+grid.PopulateGrid(rabbitCount, foxCount);
 
 // Szimuláció futtatása
 for (int turn = 1; turn <= numberOfTurns; turn++)
@@ -19,12 +39,20 @@ for (int turn = 1; turn <= numberOfTurns; turn++)
     
     // Rács megjelenítése a konzolon
     DisplayGrid(grid);
-
-    // Várakozás a következő kör előtt
-    Console.ReadKey();
+    
+    // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+    if (delay.HasValue)
+    {
+        Thread.Sleep((int)(delay.Value * 1000));
+    }
+    else
+    {
+        // Várakozás a következő kör előtt
+        Console.ReadKey();
+    }
     
     // Szimuláció következő körének végrehajtása
-    grid.NextTurn();
+    grid.NextTurn();   
 }
         
 
