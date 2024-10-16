@@ -2,33 +2,41 @@ namespace Simulator_Lib;
 
 public class Rabbit
 {
-    public int Fullness { get; private set; } = 5; // Maximális jóllakottság
+    private readonly AnimalProperties properties;
+    public int Fullness { get; private set; }      // Aktuális jóllakottság
 
     public bool IsAlive => Fullness > 0;
+
+    public Rabbit(AnimalProperties properties)
+    {
+        this.properties = properties;
+        this.Fullness = properties.MaxFullness;    // Kezdő jóllakottság
+    }
 
     // Nyúl táplálkozás
     public void Eat(Grass grass)
     {
         int nutritionalValue = grass.GetNutritionalValue();
-        if (nutritionalValue > 0 && Fullness < 5)
+        if (nutritionalValue > 0 && Fullness < properties.MaxFullness)
         {
-            Fullness = Math.Min(Fullness + nutritionalValue, 5);
+            Fullness = Math.Min(Fullness + nutritionalValue, properties.MaxFullness);
             grass.Eaten();
         }
     }
 
-    // Nyúl kör végén éhezik
+    // Nyúl éhezik minden kör végén
     public void Hunger()
     {
-        Fullness--;
+        Fullness -= properties.HungerRate;
     }
 
-    // Nyúl mozgása egy szomszédos mezőre
-    public void Move(Grid grid)
+    // Nyúl mozgása
+    public void Move(Grid grid, int currentX, int currentY)
     {
-        // Implementáljuk később a mozgási logikát
+        grid.MoveRabbit(currentX, currentY);
     }
 
     // Nyúl szaporodása
-    public bool CanReproduce() => Fullness >= 4;
+    public bool CanReproduce() => Fullness >= properties.ReproductionFullness;
 }
+
