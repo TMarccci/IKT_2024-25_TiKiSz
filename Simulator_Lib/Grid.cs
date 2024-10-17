@@ -10,6 +10,8 @@ public class Grid
     
     public int Width => _width;
     public int Height => _height;
+    
+    public enum Entities { Rabbit, Fox, Grass }
 
     public Grid(int width, int height, AnimalProperties rabbitProperties, AnimalProperties foxProperties)
     {
@@ -283,6 +285,32 @@ public class Grid
 
         return nearbyRabbits;
     }
+
+    public int CountThis(Entities ent)
+    {
+        int result = 0;
+        for (int x = 0; x < _width; x++)
+        {
+            for (int y = 0; y < _height; y++)
+            {
+                switch (ent)
+                {
+                    case Entities.Rabbit:
+                        if (_cells[x, y].HasRabbit()) result++;
+                        break;
+                    case Entities.Fox:
+                        if (_cells[x, y].HasFox()) result++;
+                        break;
+                    case Entities.Grass:
+                        if (_cells[x, y].IsEmpty()) result++;
+                        break;
+                }
+            }
+        }
+
+        return result;
+    }
+    
 
 
     public class Cell
