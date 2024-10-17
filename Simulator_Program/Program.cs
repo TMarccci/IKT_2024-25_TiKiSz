@@ -1,14 +1,15 @@
 using Simulator_Lib;
 
 // Szimuláció Paraméterei
-int width = 10;
-int height = 10;
-int numberOfTurns = 50;
-int rabbitCount = 7;
-int foxCount = 3;
-double? delay = 0.5; // seconds until next turn
+int width = 20;
+int height = 20;
+int numberOfTurns = 10;
+int numberOfSimulations = 3;
+int rabbitCount = 14;
+int foxCount = 8;
+double? delay = 2; // seconds until next turn
 
-// Nyulak tulajdonságainak beállítása
+// Nyulak tulajdonságainak beállítása 
 AnimalProperties rabbitProperties = new AnimalProperties
 {
     MaxFullness = 5,
@@ -26,35 +27,46 @@ AnimalProperties foxProperties = new AnimalProperties
     FoodValue = 3  // A nyúl tápértéke
 };
 
-// Rácsrendszer inicializálása
-Grid grid = new Grid(width, height, rabbitProperties, foxProperties);
+// Eredmény inicializálása
+Result r = new Result();
 
-// Populáció inicializálása (például 5 nyúl és 1 róka)
-grid.PopulateGrid(rabbitCount, foxCount);
-
-// Szimuláció futtatása
-for (int turn = 1; turn <= numberOfTurns; turn++)
+// Szimulációk futtatása
+for (int i = 0; i < numberOfSimulations; i++)
 {
-    Console.WriteLine($"Kör {turn}/{numberOfTurns}");
+    // Rácsrendszer inicializálása
+    Grid grid = new Grid(width, height, rabbitProperties, foxProperties);
+
+    // Populáció inicializálása (például 5 nyúl és 1 róka)
+    grid.PopulateGrid(rabbitCount, foxCount);
     
-    // Rács megjelenítése a konzolon
-    DisplayGrid(grid);
-    
-    // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-    if (delay.HasValue)
+    // Körök lépése
+    for (int turn = 1; turn <= numberOfTurns; turn++)
     {
-        Thread.Sleep((int)(delay.Value * 1000));
-    }
-    else
-    {
-        // Várakozás a következő kör előtt
-        Console.ReadKey();
+        Console.Clear();
+        Console.WriteLine($"Szimuláció: {i+1}/{numberOfSimulations} - Lépés: {turn}/{numberOfTurns}");
+    
+        // Rács megjelenítése a konzolon
+        DisplayGrid(grid);
+    
+        // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+        if (delay.HasValue)
+        {
+            Thread.Sleep((int)(delay.Value * 1000));
+        }
+        else
+        {
+            // Várakozás a következő kör előtt
+            Console.ReadKey();
+        }
+    
+        // Szimuláció következő körének végrehajtása
+        grid.NextTurn();   
     }
     
-    // Szimuláció következő körének végrehajtása
-    grid.NextTurn();   
+    r.DetermineResult(grid);
 }
-        
+
+Console.WriteLine(r.ToString());
 
 // A rácsrendszer megjelenítése a konzolon
 static void DisplayGrid(Grid grid)

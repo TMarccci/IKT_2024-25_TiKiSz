@@ -4,6 +4,7 @@ public class Grass
 {
     public enum GrassState
     {
+        JustAte,    // Épp lelegelt
         Seedling,   // Fűkezdemény
         Young,      // Zsenge fű
         Mature      // Kifejlett fűcsomó
@@ -19,7 +20,11 @@ public class Grass
     // Fű növekedése, ha nincs nyúl a területen
     public void Grow()
     {
-        if (State == GrassState.Seedling)
+        if (State == GrassState.JustAte)
+        {
+            State = GrassState.Seedling;
+        }
+        else if (State == GrassState.Seedling)
         {
             State = GrassState.Young;
         }
@@ -32,7 +37,7 @@ public class Grass
     // Nyúl legelése
     public void Eaten()
     { 
-        State = GrassState.Seedling;
+        State = GrassState.JustAte;
     }
 
     // Tápérték meghatározása
